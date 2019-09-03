@@ -64,7 +64,7 @@ function sendRequests () {
 container.on('connection_open', event => {
   console.log(`${id}: Connected to AMQP messaging service at ${amqpHost}:${amqpPort}`);
 
-  requestSender = event.connection.open_sender('work-queue/requests');
+  requestSender = event.connection.open_sender('work-queue-requests');
   responseReceiver = event.connection.open_receiver({source: {dynamic: true}});
   workerUpdateReceiver = event.connection.open_receiver('work-queue/worker-updates');
 });
@@ -138,7 +138,9 @@ app.post('/api/send-request', (req, resp) => {
       uppercase: req.body.uppercase,
       reverse: req.body.reverse
     },
-    body: req.body.text
+    body: JSON.stringify({
+      type: req.body.text
+    })
   };
 
   requestMessages.push(message);
